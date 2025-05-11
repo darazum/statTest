@@ -1,0 +1,15 @@
+{
+  "require": {
+    "slim/slim": "^4.11",
+    "slim/psr7": "^1.5",
+    "php-di/php-di": "^6.4",
+    "ext-swoole": "*",
+    "ext-redis": "*",
+    "vlucas/phpdotenv": "^5.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
+  }
+}
