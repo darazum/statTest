@@ -3,14 +3,20 @@
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\App;
-use App\StatsService;
+use App\StatService;
 
 return function (App $app) {
-    $container = $app->getContainer();
-    $statsService = $container->get(StatsService::class);
+    $app->get('/stats', function (Request $request, Response $response) use ($app) {
+        $statService = $app->getContainer()->get(StatService::class);
+        $data = $statService->getAll();
+        $response->getBody()->write(json_encode($data));
+        return $response->withHeader('Content-Type', 'application/json');
+    });
 
-    $app->post('/visit', function (Request $request, Response $response) use ($statsService) {
-        $params = (array)$request->getParsedBody();
+    $app->get('/visit', function (Request $request, Response $response) use ($app) {
+        $statService = $app->getContainer()->get(StatService::class);
+        $params = (array)$request->getQueryParams();
+        var_dump($params);
         $country = $params['country'] ?? null;
 
         if (!$country) {
@@ -18,14 +24,14 @@ return function (App $app) {
             return $response->withStatus(400);
         }
 
-        $statsService->increment($country);
+        $statService->increment($country);
         $response->getBody()->write("OK");
         return $response;
     });
 
-    $app->get('/stats', function (Request $request, Response $response) use ($statsService) {
-        $data = $statsService->getAll();
-        $response->getBody()->write(json_encode($data));
-        return $response->withHeader('Content-Type', 'application/json');
+
+    $app->map(['GET', 'POST', 'PUT', 'DELETE'], '/{routes:.+}', function ($request, $response) {
+        $response->getBody()->write('Not Found');
+        return $response->withStatus(404);
     });
 };

@@ -2,7 +2,7 @@
 
 namespace App;
 
-class StatsService
+class StatService
 {
     private \Redis $redis;
     private const HASH_KEY = 'visits';

@@ -1,24 +1,25 @@
+FROM composer:2 AS composer_stage
+
 FROM php:8.2-cli
 
+# Установка зависимостей ОС
 RUN apt-get update && apt-get install -y \
     libzip-dev zip unzip git curl \
     autoconf g++ make libssl-dev pkg-config re2c \
     libbrotli-dev \
     && docker-php-ext-install zip
 
-# Swoole
+# Установка PHP-расширений
 RUN pecl install swoole && docker-php-ext-enable swoole
-
-# Redis
 RUN pecl install redis && docker-php-ext-enable redis
 
-# Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+# ❗ Копируем composer из stage, а не глобального registry
+COPY --from=composer_stage /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
 COPY composer.* ./
-RUN composer install --no-dev --prefer-dist
+RUN composer install --no-dev --prefer-dist && composer dump-autoload --optimize
 
 COPY . .
 
