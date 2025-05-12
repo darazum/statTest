@@ -9,6 +9,14 @@ RUN apt-get update && apt-get install -y \
     libbrotli-dev \
     && docker-php-ext-install zip
 
+RUN apt-get update && apt-get install -y \
+    bash \
+    curl \
+    procps \
+    iproute2 \
+    net-tools \
+    htop
+
 # Установка PHP-расширений
 RUN pecl install swoole && docker-php-ext-enable swoole
 RUN pecl install redis && docker-php-ext-enable redis
@@ -22,6 +30,8 @@ COPY composer.* ./
 RUN composer install --no-dev --prefer-dist && composer dump-autoload --optimize
 
 COPY . .
+
+RUN date -u +"%Y-%m-%dT%H:%M:%SZ" > /build_time.txt
 
 EXPOSE 9501
 

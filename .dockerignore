@@ -1,0 +1,16 @@
+.git
+.gitignore
+tests
+node_modules
+*.log
+*.zst
+.idea
+.vscode
+*.sqlite
+*.zip
+*.tar
+*.tar.gz
+logs/
+benchmarks/
+build/
+tmp/

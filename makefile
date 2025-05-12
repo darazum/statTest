@@ -18,3 +18,10 @@ logs:
 
 composer:
 	docker compose run --rm app1 composer install
+
+log-analyze:
+	@echo "=== Top Nginx errors ==="
+	grep -v ' 200 ' logs/nginx/access.log | tail -n 20
+
+	@echo "=== Swoole server log ==="
+	tail -n 20 logs/server.log

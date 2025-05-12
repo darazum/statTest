@@ -14,19 +14,26 @@ return function (App $app) {
     });
 
     $app->get('/visit', function (Request $request, Response $response) use ($app) {
-        $statService = $app->getContainer()->get(StatService::class);
-        $params = (array)$request->getQueryParams();
-        var_dump($params);
-        $country = $params['country'] ?? null;
 
-        if (!$country) {
-            $response->getBody()->write("Missing 'country'");
-            return $response->withStatus(400);
+        try {
+            $statService = $app->getContainer()->get(StatService::class);
+            $params = (array)$request->getQueryParams();
+            $country = $params['country'] ?? null;
+
+            if (!$country) {
+                $response->getBody()->write("Missing 'country'");
+                return $response->withStatus(400);
+            }
+
+            $statService->increment($country);
+            $response->getBody()->write("OK");
+
+            return $response;
+        } catch (Exception $e) {
+            error_log("[EXCEPTION] " . $e->getMessage());
+            $response->getBody()->write("Internal error");
+            return $response->withStatus(500);
         }
-
-        $statService->increment($country);
-        $response->getBody()->write("OK");
-        return $response;
     });
 
 

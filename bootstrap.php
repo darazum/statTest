@@ -18,7 +18,12 @@ $container->set(Redis::class, function () {
 
 // Явно регистрируем StatService с Redis как зависимостью
 $container->set(StatService::class, function ($c) {
-    return new StatService($c->get(Redis::class));
+    return new StatService($c->get(Redis::class), $c->get(\App\CountryListService::class));
+});
+
+// Явно регистрируем StatService с Redis как зависимостью
+$container->set(\App\CountryListService::class, function ($c) {
+    return new \App\CountryListService($c->get(Redis::class));
 });
 
 AppFactory::setContainer($container);
